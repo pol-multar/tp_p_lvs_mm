@@ -34,12 +34,19 @@ int _filbuf(FILE* f){
   //} 
   return(n)?c:EOF;
 }
+FILE *fopen(const char *path, const char *mode)
+{
+	FILE *file;
+	file = malloc(sizeof(FILE));
+	if(	
+}
+
 
 void setbuf(FILE *stream, char *buf)
 {
-	if(buf==NULL) // Si le buffer est vide
+	if(buf==NULL) // Si le buffer est mis a NULL
 	{
-		//On crée un null buffer de taille nulle
+		//Cela veut dire que rien n'est bufferisé. (IONBF)
 		setvbuf(stream,NULL,_IONBF,0);
 	}
 	else
@@ -49,6 +56,38 @@ void setbuf(FILE *stream, char *buf)
 }
 
 int setvbuf(FILE *stream, char *buf, int mode, int size)
+{
+	
+	stream->_flag = _bufsiz | _base | _ptr | _cnt;
+	if(mode == _IOFBF)
+	{
+		stream->_bufsiz=size;
+		stream->_cnt=0;
+		stream->_base = buf;
+		stream->_ptr=stream->_base;
+	}
+	else if(mode == _IONBF)
+	{
+		// On est en mode non bufferisé donc on prend un caractère comme buffer
+		size = 1;
+		buf = (char *)&stream->_file;
+		stream->_bufsiz=size;
+		stream->_cnt=0;
+		stream->_base = buf;
+		stream->_ptr=stream->_base;
+	}
+	return 0;
+}
+
+static int fflush()
+{
+	if((cmp = stream->ptr - stream->base) > 0)
+	{
+		 written = write(stdout, stream->_base, cmp);		 
+	}
+	stream->ptr = stream->base;
+	stream->cnt = 0;
+}
 
 /*
 int main (){

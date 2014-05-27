@@ -3,4 +3,4 @@ _cnt permet de compter le nombre de caractères lus/écrits
 *_base est un pointeur sur le premier caractère du buffer
 _bufsize est la taille du buffer
 _flag permet d'avoir une vérification supplémentaire sur tous les champs (un peu comme un bit de parité) en faisant l'union(|) de ceux ci
-_file est le nom du fichier
+_file est un champ contenant un caractère qui peut servir de buffer
