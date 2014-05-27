@@ -1,0 +1,6 @@
+_cnt permet de compter le nombre de caractères lus/écrits 
+*_ptr est un pointeur sur le caractère courant ds le buffer
+*_base est un pointeur sur le premier caractère du buffer
+_bufsize est la taille du buffer
+_flag ?
+_file est le nom du fichier
