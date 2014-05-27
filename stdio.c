@@ -2,9 +2,9 @@
 #include <unistd.h>
 #include <string.h>
 
-struct _iobuf _IOB[10]=
-  {{0,NULL,NULL,0,1,0},//stdin
-   {...
+//struct _iobuf _IOB[10]=
+//  {{0,NULL,NULL,0,1,0},//stdin
+//   {...
 
 void tracer(FILE *f)
 {
