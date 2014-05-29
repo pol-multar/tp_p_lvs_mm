@@ -1,10 +1,18 @@
 #include "stdio.h"
 #include <unistd.h>
 #include <string.h>
+#include <fcntl.h>
+#include <stdlib.h>
 
-//struct _iobuf _IOB[10]=
-//  {{0,NULL,NULL,0,1,0},//stdin
-//   {...
+// stdin , stdout , ...
+struct _iobuf _IOB[10]={{0,NULL,NULL,0,1,0},{0,NULL,NULL,0,1,1},{0,NULL,NULL,0,1,2}};
+
+int main (){
+  tracer(stdin);
+  tracer(stdout);
+  tracer(stderr);
+  return 0;
+}
 
 void tracer(FILE *f)
 {
@@ -16,6 +24,8 @@ void tracer(FILE *f)
 	     f->_cnt, f->_ptr, f->_base, f->_bufsiz, f->_flag, f->_file);
     write(2, buffer, strlen(buffer));
 }
+
+
 //Il manque encore des tests dans cette fonction
 // A chaque caractere lu on va dons _filbuf
 int _filbuf(FILE* f){
@@ -39,16 +49,52 @@ int _filbuf(FILE* f){
  * La fonction _flsbuf utilisée (entre autre) dans putc
  */
 int _flsbuf(unsigned char c,FILE* f){
-
+	return 0;
 }
 
 
-FILE *fopen(const char *path, const char *mode)
-{
-	FILE *file;
-	file = malloc(sizeof(FILE));
-	if(	
+
+/* ###########################" */
+
+FILE *fopen(const char *path, const char *mode){
+	int fd;
+	FILE *fil;
+
+	fil = (FILE *)malloc(sizeof(FILE));
+	if(fil == 0)//erreur
+	{
+		return NULL;
+	}
+
+	switch(*mode)
+	{	//On mettra r pour read w pour write et z pour read/write
+		case 'r': fd = open((char *)path, O_RDONLY,0644);
+		 fil->_flag |= _IOREAD;
+		 break;
+		case 'w': fd = open((char *)path, O_WRONLY | O_CREAT | O_TRUNC,0644);
+		 fil->_flag |= _IOWRT;
+		 break;
+		default  : fd = open((char *)path, O_RDWR | O_CREAT | O_TRUNC,0644);
+		 fil->_flag |= _IORW;		 
+	}
+
+
+	if (fd == -1)	{	//erreur	
+		return NULL;
+	}
+
+	
+
+	//initialisation
+	fil->_ptr = NULL;
+    fil->_cnt = 0;
+    fil->_base = NULL;
+    fil->_flag = 0;
+    fil->_file = fd;
+    fil->_bufsiz =BUFSIZ;
+    return fil;
 }
+
 
 
 void setbuf(FILE *stream, char *buf)
@@ -67,7 +113,7 @@ void setbuf(FILE *stream, char *buf)
 int setvbuf(FILE *stream, char *buf, int mode, int size)
 {
 	
-	stream->_flag = _bufsiz | _base | _ptr | _cnt;
+	
 	if(mode == _IOFBF)
 	{
 		stream->_bufsiz=size;
@@ -88,20 +134,38 @@ int setvbuf(FILE *stream, char *buf, int mode, int size)
 	return 0;
 }
 
-static int fflush()
+int fflush(FILE *fb)
 {
-	if((cmp = stream->ptr - stream->base) > 0)
-	{
-		 written = write(stdout, stream->_base, cmp);		 
+	int cmp;
+	if (!(fb->_flag & (_IOREAD | _IOWRT | _IORW))) {
+		return -1; //erreur, on ne peut rien faire
 	}
-	stream->ptr = stream->base;
-	stream->cnt = 0;
+	if (!fb) {
+		fb = stdout;
+	}
+	if (fb->_base && fb->_ptr != fb->_base) {
+        
+		if((cmp = fb->_ptr - fb->_base) > 0)
+		{
+		 	write(fb->_file, fb->_base, cmp);		 
+		}
+		fb->_ptr = fb->_base;
+		fb->_cnt = 0;
+	}
+
+	return 0;
 }
 
-/*
-int main (){
-  tracer(stdin);
-  tracer(stdout);
-  tracer(stderr);
-  return 0;
-  }*/
+int fclose(FILE *fp)
+{
+	fflush(fp);
+	close(fp->_file); // close du file descriptor
+	  
+	free(fp->_ptr);
+	free(fp->_base);
+	
+	free(fp);
+	return 0;
+}
+
+
