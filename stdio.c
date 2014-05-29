@@ -7,12 +7,14 @@
 // stdin , stdout , ...
 struct _iobuf _IOB[10]={{0,NULL,NULL,0,1,0},{0,NULL,NULL,0,1,1},{0,NULL,NULL,0,1,2}};
 
+/*
 int main (){
   tracer(stdin);
   tracer(stdout);
   tracer(stderr);
   return 0;
 }
+*/
 
 void tracer(FILE *f)
 {
@@ -23,6 +25,32 @@ void tracer(FILE *f)
 	     "\tcnt: %d, ptr: %p, base: %p, bufsiz: %d, flag:%x, file:%d\n\n",
 	     f->_cnt, f->_ptr, f->_base, f->_bufsiz, f->_flag, f->_file);
     write(2, buffer, strlen(buffer));
+}
+
+int stdio_init(void){
+    struct _iobuf _IOB[10]; /* le pointeur vers la structure dénfinie comme externe dans stdio.h*/
+
+/**
+* On alloue la mémoire et on initialise la structure
+*/
+
+/**
+ * if((_IOB =_stdio_create(sizeof(struct _iobuf)))==NULL){
+ *	return errno;
+ *	  }
+ */
+
+/* Initialisation de stdin */
+    _IOB[0]._cnt=0;
+    _IOB[0]._ptr =malloc(BUFSIZ);
+    _IOB[0]._base=_IOB[0]._ptr;
+    _IOB[0]._bufsiz=BUFSIZ;
+    _IOB[0]._flag=_IOREAD | _IOFBF;
+    _IOB[0]._file=0;
+
+//Pour la compilation
+    return 0;
+
 }
 
 
