@@ -29,6 +29,13 @@ void tracer(FILE *f)
     write(2, buffer, strlen(buffer));
 }
 
+/*!
+   \fn Fonction qui initialise _IOB
+   \param aucun
+   \return 0 si tout s'est bien passé
+*/
+
+
 int stdio_init(void){
 /**
 * On alloue la mémoire et on initialise la structure
@@ -45,10 +52,29 @@ int stdio_init(void){
     _IOB[0]._ptr =malloc(BUFSIZ);
     _IOB[0]._base=_IOB[0]._ptr;
     _IOB[0]._bufsiz=BUFSIZ;
-    _IOB[0]._flag=_IOREAD | _IOFBF;
     _IOB[0]._file=0;
+    _IOB[0]._flag=_IOREAD | _IOFBF;
 
-//Pour la compilation
+
+/* Initialisation de stdout */
+    _IOB[1]._cnt=0;
+    _IOB[1]._ptr =NULL;
+    _IOB[1]._base=NULL;
+    _IOB[1]._bufsiz=BUFSIZ;
+    _IOB[1]._flag=_IOWRT | _IOFBF;
+    _IOB[1]._file=1;
+
+/* Initialisation de stderr */
+    _IOB[2]._cnt=0;
+    _IOB[2]._ptr =NULL;
+    _IOB[2]._base=NULL;
+    _IOB[2]._bufsiz=BUFSIZ;
+    _IOB[2]._flag=_IOWRT | _IOFBF;
+    _IOB[2]._file=2;
+
+
+
+/* Si l'initialisation s'est bien déroulée */
     return 0;
 
 }

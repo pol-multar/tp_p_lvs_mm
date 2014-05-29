@@ -52,8 +52,21 @@ void test_getc(void)
        write(1,&c,1);
     */
 }
+
+void test_f_initialisation(void)
+{
+    tracer(stdin);
+    tracer(stdout);
+    tracer(stderr);
+    stdio_init();
+    tracer(stdin);
+    tracer(stdout);
+    tracer(stderr);
+
+}
 int main(){
-    test_etatInit();
+    //test_etatInit();
+    test_f_initialisation();
   
   return 0;
 }
