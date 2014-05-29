@@ -53,7 +53,7 @@ void test_getc(void)
     */
 }
 int main(){
-    test_getc();
+    test_etatInit();
   
   return 0;
 }

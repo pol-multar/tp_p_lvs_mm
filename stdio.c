@@ -4,16 +4,18 @@
 #include <fcntl.h>
 #include <stdlib.h>
 
-// stdin , stdout , ...
+/**
+ * Tableau _IOB de la structure définie comme externe dans stdio.h
+ * Les trois premières cases contiennent respectivement :
+ * stdin, stdout et stderr
+*/
+
 struct _iobuf _IOB[10]={{0,NULL,NULL,0,1,0},{0,NULL,NULL,0,1,1},{0,NULL,NULL,0,1,2}};
 
-/*
-int main (){
-  tracer(stdin);
-  tracer(stdout);
-  tracer(stderr);
-  return 0;
-}
+/*!
+   \fn tracer 
+   \param le FILE à tracer
+   \return 
 */
 
 void tracer(FILE *f)
@@ -28,8 +30,6 @@ void tracer(FILE *f)
 }
 
 int stdio_init(void){
-    struct _iobuf _IOB[10]; /* le pointeur vers la structure dénfinie comme externe dans stdio.h*/
-
 /**
 * On alloue la mémoire et on initialise la structure
 */
