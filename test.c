@@ -1,9 +1,22 @@
 #include"stdio.h"
 #include <unistd.h>
 
+void tracer(FILE *f);
+
 /**
  * Test qui permet d'afficher l'état initial
  * des fichiers stdin, stdout et stderr
+ */
+void test_etatInit(void)
+{
+    tracer(stdin);
+    tracer(stdout);
+    tracer(stderr);
+}
+
+/**
+ * Test qui permet de vérifier
+ * la lecture de deux caractères (mais 3 entrés) 
  */
 void test_lecture_2c(void){
 
@@ -12,18 +25,6 @@ void test_lecture_2c(void){
     tracer(stdin);
     getchar();
     tracer(stdin);
-}
-
-/**
- * Test qui permet de vérifier
- * la lecture de deux caractères (mais 3 entrés) 
- */
-
-void test_etatInit(void)
-{
-    tracer(stdin);
-    tracer(stdout);
-    tracer(stderr);
 }
 
 /**

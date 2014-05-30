@@ -95,11 +95,86 @@ int _filbuf(FILE* f){
     return c;
 }
 
-/**
- * La fonction _flsbuf utilisée (entre autre) dans putc
- */
+/*!
+   \fn _flsbuf fonction utilisée dans putc pour ajouter un caractère dans le buffer. Elle flush le buffer.
+   \param c : le caractère à ajouter, f le fichier ou ajouter le caractère 
+   \return la valeur int de c si l'ajout est correct, int de EOF sinon.
+*/
+
 int _flsbuf(unsigned char c,FILE* f){
-	return 0;
+  int cpt;
+  char tmp[1];
+
+  if(f->_bufsiz <=1){
+	/*
+	 * Le fichier ouvert est non bufferisée, le caractère
+	 * est directement écrit dans le fichier.
+	 */
+	f->_cnt=0;
+	tmp[0]=c;
+	if(write(f->_file,tmp,1)!=1){ /* Erreur lors de l'écriture */
+	  f->_flag |= _IOERR;
+	  return (int)EOF;
+	}
+	return (int)c;
+  }
+
+  if(!(f->_base)){
+	/*
+	 * Il n'y a pas de buffer encore alloué au fichier.
+	 * On va donc créé le buffer en allouant dynamiquement
+	 * la mémoire.
+	 */
+	f->_ptr = f->_base = malloc(f->_bufsiz);
+	f->_cnt = f->_bufsiz;
+	if(!f->_base){				/* Erreur lors de l'allocation */
+	  errno = ENOMEM;
+	  f->_flag |= _IOERR;
+	  return (int)EOF;
+	}
+  }
+  if(f->_ptr == f->_base + f-> _bufsiz){
+	/*
+	 * Le buffer peut être plein.
+	 * Dans ce cas on l'écrit dans le fichier.
+	 */
+	if(write(f->_file,(char *)f->_base,f->_bufsiz)!=f->_bufsiz)
+	  {
+		f->_flag |= _IOERR;
+		return (int)EOF;
+	  }
+	f->_ptr = f->_base;
+	f->_cnt = f->_bufsiz;
+	f->_flag &= ~_IOMYBUF;		/* A vérifier */
+  }
+  if(f->_flag & _IOWRT || f->_flag & _IORW){
+	/*
+	 * Si on a l'accès en écriture sur le fichier, 
+	 * alors le caractère peut être copié dans le buffer :
+	 */
+	f->_flag |= _IOMYBUF;		/* A vérifier */
+	*f->_ptr++=c;
+	f->_cnt--;
+  }
+
+  if ((f->_flag & (_IOLBF | _IOMYBUF)) == (_IOLBF | _IOMYBUF)) { /* A vérifier */
+	/*
+	 * Si le fichier est bufferisé par ligne,
+	 * nous devons chercher les '\n' pour savoir
+	 * si le buffer doit être écrit
+	 */
+	if(c=='\n') {
+	  cpt =f->_ptr - f->_base;
+	  if(write(f->_file,(char *)f->_base,cpt)!=cpt){
+		f->_flag |= _IOERR;
+		return (int)EOF;
+	  }
+	  f->_ptr = f-> _base;
+	  f-> _flag &= ~_IOMYBUF;		/* A vérifier */
+	}
+	f->_cnt=0;
+  }
+  return (int)c;
 }
 
 
