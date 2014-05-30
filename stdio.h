@@ -19,7 +19,7 @@ extern	struct	_iobuf {
   int		_cnt;//Compteur ? Nbr de caractere dans le buffeur
   unsigned char*  _ptr;//emplacement disponible pour mettre un caractère
   unsigned char*  _base;//Qui alloue la base ?
-  int		_bufsiz;
+  int		_bufsiz;//La taille du buffer sans doute
   short		_flag;//Union des valeurs precedente ?
   char		_file;//Char est un petit entier
 } _IOB[];
@@ -55,7 +55,7 @@ extern int getc();
 //ptr pointe sur base au depart
 //ne pas oublier de mettre des conditions :
 //(si j'ai pas de buffer, etc...)
-//qui alloue p->base
+//et donc d'allouer p->base
 #define putc(x, p)	(--(p)->_cnt >= 0 ?\
 	(int)(*(p)->_ptr++ = (unsigned char)(x)) :\
 	(((p)->_flag & _IOLBF) && -(p)->_cnt < (p)->_bufsiz ?\

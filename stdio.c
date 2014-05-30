@@ -3,6 +3,10 @@
 #include <string.h>
 #include <fcntl.h>
 #include <stdlib.h>
+#include <errno.h>
+
+void tracer(FILE *f);
+int snprintf(char *str, size_t size, const char *format, ...);
 
 /**
  * Tableau _IOB de la structure définie comme externe dans stdio.h
@@ -83,20 +87,60 @@ int stdio_init(void){
 //Il manque encore des tests dans cette fonction
 // A chaque caractere lu on va dons _filbuf
 int _filbuf(FILE* f){
-    int c;
-    int n=read(f->_file,&c,1);
-    //f->_cnt=read(f->_file,f->_base,f->_bufsize)
-    //Consomme le premier caractere du buffer
-    //f->ptr=f->base+1
-    //f->cnt--
-    
-    //if(f->_cnt==0)
-    //return EOF;
-    //else{
-    //f->_cnt--;
-    //return(f->ptr++);
-    //} 
-    return(n)?c:EOF;
+    int c=EOF;
+
+/*
+ *On regarde d'abord si le fichier est ouvert
+ */
+    if (!(f->_flag & (_IOREAD | _IOWRT | _IORW))) {
+        errno = EBADF;
+	return c;
+    }
+
+    if(!f->_base){	
+/*
+ * Il n'y a pas encore de buffer alloué pour ce fichier
+ * On va donc alloué de la mémoire pour le buffer 
+ */
+	f->_base = malloc(f->_bufsiz);
+	if(!f->_base){//L'allocation a échouée
+	    errno=ENOMEM;
+	    return c;
+	}
+    }else if(((int)f->_cnt)>0){
+/*
+ * Il y a un caractère non lu dans le buffer.
+ * On le retourne
+ */
+	--f->_cnt;
+	c = *f->_ptr++;
+	return c;
+    }
+
+/*
+ * On remplit le buffer avec la prochaine partie du fichier
+ */
+
+    f->_flag&=~_IOMYBUF;		/* A vérifier */
+    if(f->_bufsiz){
+	f->_cnt=read(f->_file,(char *)(f->_ptr=f->_base),f->_bufsiz);
+    }else{
+/*
+ *Le buffer n'a pas de taille valide, il ne peut pas y avoir de lecture
+ */
+	f->_cnt=0;
+    }
+    if(f->_cnt<0){ /* Il y a une erreur */
+	f->_flag |= _IOERR;
+    }else if(!f->_cnt){/* On est en fin de fichier */
+	f->_flag|=_IOEOF;
+    }else{/* Il y a des données lues depuis le fichier */
+	f->_flag&=~_IOEOF;
+	f->_cnt--;
+	c=*f->_ptr++;
+    }
+
+    return c;
 }
 
 /**
