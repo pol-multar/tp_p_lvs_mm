@@ -16,12 +16,12 @@ int snprintf(char *str, size_t size, const char *format, ...);
 
 struct _iobuf _IOB[10]={{0,NULL,NULL,0,1,0},{0,NULL,NULL,0,1,1},{0,NULL,NULL,0,1,2}};
 
-/*!
-   \fn tracer 
-   \param le FILE à tracer
-   \return 
-*/
 
+/*!
+   \fn tracer : Fonction qui permet d'afficher les valeurs des différents champs de la structure_iobuf
+   \param le FILE à tracer
+   \return void
+*/
 void tracer(FILE *f)
 {
     char buffer[500];
@@ -34,58 +34,10 @@ void tracer(FILE *f)
 }
 
 /*!
-   \fn Fonction qui initialise _IOB
-   \param aucun
-   \return 0 si tout s'est bien passé
+   \fn _filbuf : Fonction qui remplit un buffer à partir d'un fichier
+   \param le fichier a bufferiser
+   \return le caractère lu, EOF si c'est terminé
 */
-
-
-int stdio_init(void){
-/**
-* On alloue la mémoire et on initialise la structure
-*/
-
-/**
- * if((_IOB =_stdio_create(sizeof(struct _iobuf)))==NULL){
- *	return errno;
- *	  }
- */
-
-/* Initialisation de stdin */
-    _IOB[0]._cnt=0;
-    _IOB[0]._ptr =malloc(BUFSIZ);
-    _IOB[0]._base=_IOB[0]._ptr;
-    _IOB[0]._bufsiz=BUFSIZ;
-    _IOB[0]._file=0;
-    _IOB[0]._flag=_IOREAD | _IOFBF;
-
-
-/* Initialisation de stdout */
-    _IOB[1]._cnt=0;
-    _IOB[1]._ptr =NULL;
-    _IOB[1]._base=NULL;
-    _IOB[1]._bufsiz=BUFSIZ;
-    _IOB[1]._flag=_IOWRT | _IOFBF;
-    _IOB[1]._file=1;
-
-/* Initialisation de stderr */
-    _IOB[2]._cnt=0;
-    _IOB[2]._ptr =NULL;
-    _IOB[2]._base=NULL;
-    _IOB[2]._bufsiz=BUFSIZ;
-    _IOB[2]._flag=_IOWRT | _IOFBF;
-    _IOB[2]._file=2;
-
-
-
-/* Si l'initialisation s'est bien déroulée */
-    return 0;
-
-}
-
-
-//Il manque encore des tests dans cette fonction
-// A chaque caractere lu on va dons _filbuf
 int _filbuf(FILE* f){
     int c=EOF;
 
