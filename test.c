@@ -2,6 +2,7 @@
 #include <unistd.h>
 
 void tracer(FILE *f);
+int scanf(const char *format, ...);
 
 /**
  * Test qui permet d'afficher l'état initial
@@ -54,9 +55,26 @@ void test_getc(void)
     */
 }
 
-int main(){
-    test_etatInit();
+void menu(int *boucle){
+  int i;
+  printf("\n*** Menu de test des fonctions implémentée dans stdio.c **\n\n");
+  printf("Tapez le chiffre correspondant au test que vous voulez exécuter\n\n");
+  printf("   0 -> Quitter le programme\n");
+  printf("   1 -> Afficher l'état initial de stdin, stdout et stderr\n");
+  printf("   2 -> Test qui permet de vérifier la lecture de 2 caractères\n");
+  printf("   3 -> Test d'écriture sur la sortie standard\n");
+  scanf("%d",&i);
+  printf("%d\n",i);
+  if(i==0){
+	*boucle=0;
+  }
+}
 
+int main(){
+  int boucle=1;
+  while (boucle){
+	menu(&boucle);
+  }
   
   return 0;
 }
