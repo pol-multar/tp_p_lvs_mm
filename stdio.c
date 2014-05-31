@@ -7,6 +7,7 @@
 
 void tracer(FILE *f);
 int snprintf(char *str, size_t size, const char *format, ...);
+int fflush(FILE *stream);
 
 /**
  * Tableau _IOB de la structure définie comme externe dans stdio.h
@@ -14,7 +15,46 @@ int snprintf(char *str, size_t size, const char *format, ...);
  * stdin, stdout et stderr
 */
 
-struct _iobuf _IOB[10]={{0,NULL,NULL,0,1,0},{0,NULL,NULL,0,1,1},{0,NULL,NULL,0,1,2}};
+struct _iobuf _IOB[10];
+
+/*!
+   \fn _IOB_init, chargée d'initialiser stdin, stdout et stderr 
+   \param void
+   \return void
+*/
+void _IOB_init(void){
+  
+  /* Initialisation de stdin (&_IOB[0]) */
+  stdin->_cnt =0;
+  stdin->_ptr =NULL;//malloc(BUFSIZ)
+  stdin->_base=NULL;//stdin->_ptr
+  stdin->_bufsiz=0;//BUFSIZ
+  stdin->_file=0;
+  stdin->_flag = _IOREAD | _IOFBF;
+
+
+  /* Initialisation de stdout (&_IOB[1]) */
+  stdout->_cnt =0;
+  stdout->_ptr =NULL;
+  stdout->_base=NULL;
+  stdout->_bufsiz=0;//BUFSIZ
+  stdout->_file=1;
+  if(isatty(stdout->_file)){	/* Fenêtre de terminal est buffurisée par ligne */
+	stdout->_flag = _IOWRT | _IOLBF;
+  }else{
+	stdout->_flag = _IOWRT | _IOFBF;
+  }
+
+
+  /* Initialisation de stderr (&_IOB[2]) */
+  stderr->_cnt =0;
+  stderr->_ptr =NULL;
+  stderr->_base=NULL;
+  stderr->_flag = _IOWRT | _IONBF;
+  stderr->_file=2;
+  stderr->_bufsiz=(isatty(stderr->_file)) ? 0 : BUFSIZ;
+ 
+}
 
 
 /*!
@@ -40,7 +80,7 @@ void tracer(FILE *f)
 */
 int _filbuf(FILE *f){
     int c=EOF;
-    f->_bufsiz = BUFSIZ;
+
 /*
  *On regarde d'abord si le fichier est ouvert
  */
@@ -54,6 +94,7 @@ int _filbuf(FILE *f){
 	   * Il n'y a pas encore de buffer alloué pour ce fichier
 	   * On va donc allouer de la mémoire pour le buffer :
 	   */
+	  f->_bufsiz = BUFSIZ;
 	  f->_base = malloc(f -> _bufsiz);
 	  f->_flag &= ~_IOMYBUF;//C'est moi qui alloue le buffer
 	  if(!f->_base){//L'allocation a échouée
@@ -134,6 +175,7 @@ int _flsbuf(unsigned char c,FILE* f){
 	 * On va donc créer le buffer en allouant dynamiquement
 	 * la mémoire.
 	 */
+	f->_bufsiz = BUFSIZ;
 	f->_ptr = f->_base = malloc(f->_bufsiz);
 	f->_cnt = f->_bufsiz;
 	if(!f->_base){				/* Erreur lors de l'allocation */

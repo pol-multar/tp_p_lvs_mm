@@ -50,7 +50,8 @@ extern int _filbuf(FILE * f);
 extern int putc();
 extern int getc();
 #else
-#define	getc(p)		(--(p)->_cnt>=0? ((int)*(p)->_ptr++):_filbuf(p))//si >=0 je renvoi le caractere courant (*ptr++) et j'incremente le pointeur de 1
+#define	getc(p)		(--(p)->_cnt>=0? ((int)*(p)->_ptr++):_filbuf(p))
+//si >=0 je renvoi le caractere courant (*ptr++) et j'incremente le pointeur de 1
 //Sinon je lance _filebuf(p), fonction qui fait read(p->_file,p->bufsize,p->_base)
 //ptr pointe sur base au depart
 //ne pas oublier de mettre des conditions :

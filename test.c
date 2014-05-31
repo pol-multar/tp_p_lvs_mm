@@ -3,6 +3,7 @@
 
 void tracer(FILE *f);
 int scanf(const char *format, ...);
+void _IOB_init(void); //A UTILISER A CHAQUE DEBUT DE PROGRAMME
 
 /**
  * Test qui permet d'afficher l'état initial
@@ -10,9 +11,9 @@ int scanf(const char *format, ...);
  */
 void test_etatInit(void)
 {
-    tracer(stdin);
-    tracer(stdout);
-    tracer(stderr);
+  tracer(stdin);
+  tracer(stdout);
+  tracer(stderr);
 }
 
 /**
@@ -20,11 +21,11 @@ void test_etatInit(void)
  * la lecture de deux caractères (mais 3 entrés) 
  */
 void test_lecture_2c(void){
-    tracer(stdin);
-    getchar();
-    tracer(stdin);
-    getchar();
-    tracer(stdin);
+  tracer(stdin);
+  getchar();
+  tracer(stdin);
+  getchar();
+  tracer(stdin);
 }
 
 /**
@@ -33,13 +34,13 @@ void test_lecture_2c(void){
  */
 void test_ecritureStdout(void)
 {
-    tracer(stdout);
-    putc('X',stdout);
-    tracer(stdout);
-    putc('Y',stdout);
-    tracer(stdout);
-    putc('\n',stdout);
-    tracer(stdout);
+  tracer(stdout);
+  putc('X',stdout);
+  tracer(stdout);
+  putc('Y',stdout);
+  tracer(stdout);
+  putc('\n',stdout);
+  tracer(stdout);
 }
 
 void test_getc(void)
@@ -92,6 +93,9 @@ void menu(int *boucle){
 
 int main(){
   int boucle=1;
+  
+  _IOB_init();
+  
   while (boucle){
 	menu(&boucle);
   }
