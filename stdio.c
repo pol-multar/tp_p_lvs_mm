@@ -55,7 +55,7 @@ int _filbuf(FILE *f){
 	   * On va donc allouer de la mémoire pour le buffer :
 	   */
 	  f->_base = malloc(f -> _bufsiz);
-	  f->_flag &= ~_IOMYBUF;
+	  f->_flag &= ~_IOMYBUF;//C'est moi qui alloue le buffer
 	  if(!f->_base){//L'allocation a échouée
 		errno = ENOMEM;
 		return c;
@@ -100,6 +100,7 @@ int _filbuf(FILE *f){
 	  f->_cnt--;
 	  c=*f->_ptr++;
     }
+	return (int )c;
 
 }
 
@@ -130,7 +131,7 @@ int _flsbuf(unsigned char c,FILE* f){
   if(!(f->_base)){
 	/*
 	 * Il n'y a pas de buffer encore alloué au fichier.
-	 * On va donc créé le buffer en allouant dynamiquement
+	 * On va donc créer le buffer en allouant dynamiquement
 	 * la mémoire.
 	 */
 	f->_ptr = f->_base = malloc(f->_bufsiz);
@@ -143,7 +144,7 @@ int _flsbuf(unsigned char c,FILE* f){
   }
   if(f->_ptr == f->_base + f-> _bufsiz){
 	/*
-	 * Le buffer peut être plein.
+	 * Le buffer est sans doute plein.
 	 * Dans ce cas on l'écrit dans le fichier.
 	 */
 	if(write(f->_file,(char *)f->_base,f->_bufsiz)!=f->_bufsiz)
@@ -153,39 +154,34 @@ int _flsbuf(unsigned char c,FILE* f){
 	  }
 	f->_ptr = f->_base;
 	f->_cnt = f->_bufsiz;
-	f->_flag &= ~_IOMYBUF;		/* A vérifier */
   }
   if(f->_flag & _IOWRT || f->_flag & _IORW){
 	/*
 	 * Si on a l'accès en écriture sur le fichier, 
 	 * alors le caractère peut être copié dans le buffer :
 	 */
-	f->_flag |= _IOMYBUF;		/* A vérifier */
 	*f->_ptr++=c;
 	f->_cnt--;
   }
 
-  if ((f->_flag & (_IOLBF | _IOMYBUF)) == (_IOLBF | _IOMYBUF)) { /* A vérifier */
+  if ((f->_flag & _IOLBF) == (_IOLBF)) { /* A vérifier */
 	/*
 	 * Si le fichier est bufferisé par ligne,
 	 * nous devons chercher les '\n' pour savoir
 	 * si le buffer doit être écrit
 	 */
 	if(c=='\n') {
-	  cpt =f->_ptr - f->_base;
+	  cpt =((f->_ptr) - (f->_base));
 	  if(write(f->_file,(char *)f->_base,cpt)!=cpt){
 		f->_flag |= _IOERR;
 		return (int)EOF;
 	  }
 	  f->_ptr = f-> _base;
-	  f-> _flag &= ~_IOMYBUF;		/* A vérifier */
 	}
 	f->_cnt=0;
   }
   return (int)c;
 }
-
-
 
 /* ###########################" */
 
