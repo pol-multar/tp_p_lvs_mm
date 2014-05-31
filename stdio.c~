@@ -40,7 +40,7 @@ void tracer(FILE *f)
 */
 int _filbuf(FILE *f){
     int c=EOF;
-    f->_bufsiz = BUFSIZ;
+
 /*
  *On regarde d'abord si le fichier est ouvert
  */
