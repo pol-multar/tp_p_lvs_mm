@@ -247,7 +247,7 @@ int setvbuf(FILE *stream, char *buf, int mode, int size)
 {
 	
 	
-	if(mode == _IOFBF)
+	if(mode == _IOFBF || mode == _IOFBF)
 	{
 		stream->_bufsiz=size;
 		stream->_cnt=0;
