@@ -20,7 +20,6 @@ void test_etatInit(void)
  * la lecture de deux caractères (mais 3 entrés) 
  */
 void test_lecture_2c(void){
-
     tracer(stdin);
     getchar();
     tracer(stdin);
@@ -64,10 +63,31 @@ void menu(int *boucle){
   printf("   2 -> Test qui permet de vérifier la lecture de 2 caractères\n");
   printf("   3 -> Test d'écriture sur la sortie standard\n");
   scanf("%d",&i);
-  printf("%d\n",i);
+  //printf("%d\n",i);
   if(i==0){
 	*boucle=0;
   }
+
+  switch(i)
+	{
+	case 0:
+	  printf("\n\n  -->  Sortie du programme\n");
+	  *boucle=0;
+	  break;
+	case 1:
+	  test_etatInit();
+	  break;
+	case 2:
+	  test_lecture_2c();
+	  break;
+	case 3:
+	  test_ecritureStdout();
+	  break;
+	default:
+	  printf("\n\nCe que vous avez rentré n'est attribué à aucun test pour le moment\n");
+	  break;
+	
+	}
 }
 
 int main(){
