@@ -52,14 +52,14 @@ int _filbuf(FILE* f){
     if(!f->_base){	
 /*
  * Il n'y a pas encore de buffer alloué pour ce fichier
- * On va donc alloué de la mémoire pour le buffer 
+ * On va donc allouer de la mémoire pour le buffer :
  */
-	f->_base = malloc(f->_bufsiz);
-	if(!f->_base){//L'allocation a échouée
-	    errno=ENOMEM;
-	    return c;
-	}
-    }else if(((int)f->_cnt)>0){
+	  f->_base = malloc(f->_bufsiz);
+	  if(!f->_base){//L'allocation a échouée
+		errno=ENOMEM;
+		return c;
+	  }
+    } else if(((int)f->_cnt)>0){
 /*
  * Il y a un caractère non lu dans le buffer.
  * On le retourne
@@ -82,6 +82,7 @@ int _filbuf(FILE* f){
  */
 	f->_cnt=0;
     }
+	
     if(f->_cnt<0){ /* Il y a une erreur */
 	f->_flag |= _IOERR;
     }else if(!f->_cnt){/* On est en fin de fichier */
