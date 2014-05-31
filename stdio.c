@@ -38,7 +38,7 @@ void tracer(FILE *f)
    \param le fichier a bufferiser
    \return le caractère lu, EOF si c'est terminé
 */
-int _filbuf(FILE* f){
+int _filbuf(FILE *f){
     int c=EOF;
 
 /*
@@ -49,51 +49,58 @@ int _filbuf(FILE* f){
 	return c;
     }
 
-    if(!f->_base){	
-/*
- * Il n'y a pas encore de buffer alloué pour ce fichier
- * On va donc allouer de la mémoire pour le buffer :
- */
-	  f->_base = malloc(f->_bufsiz);
+    if(!f -> _base){	
+	  /*
+	   * Il n'y a pas encore de buffer alloué pour ce fichier
+	   * On va donc allouer de la mémoire pour le buffer :
+	   */
+	  f->_base = malloc(f -> _bufsiz);
+	  f->_flag &= ~_IOMYBUF;
 	  if(!f->_base){//L'allocation a échouée
-		errno=ENOMEM;
+		errno = ENOMEM;
 		return c;
 	  }
-    } else if(((int)f->_cnt)>0){
-/*
- * Il y a un caractère non lu dans le buffer.
- * On le retourne
- */
-	--f->_cnt;
-	c = *f->_ptr++;
-	return c;
+    } else if(((int)f -> _cnt)>0){
+	  /*
+	   * Il y a un caractère non lu dans le buffer.
+	   * On le retourne:
+	   */
+	  --f->_cnt;
+	  c = *f->_ptr++;
+	  return c;
     }
 
-/*
- * On remplit le buffer avec la prochaine partie du fichier
- */
+	/*
+	 * On va flush le fichier si l'on est buffurisé par ligne
+	 */
 
-    f->_flag&=~_IOMYBUF;		/* A vérifier */
+	if(f->_flag & _IOLBF){
+	  fflush(f);
+	}
+
+	/*
+	 * On remplit le buffer avec la prochaine partie du fichier
+	 */
     if(f->_bufsiz){
-	f->_cnt=read(f->_file,(char *)(f->_ptr=f->_base),f->_bufsiz);
+	  f->_cnt = read(f->_file,(char *)(f->_ptr=f->_base),f->_bufsiz);
     }else{
-/*
- *Le buffer n'a pas de taille valide, il ne peut pas y avoir de lecture
- */
-	f->_cnt=0;
+	  /*
+	   *Le buffer n'a pas de taille valide, il ne peut pas y avoir de lecture
+	   *(Une valeur de 0 est mise par la fonction sscanf())
+	   */
+	  f->_cnt=0;
     }
 	
     if(f->_cnt<0){ /* Il y a une erreur */
-	f->_flag |= _IOERR;
+	  f->_flag |= _IOERR;
     }else if(!f->_cnt){/* On est en fin de fichier */
-	f->_flag|=_IOEOF;
-    }else{/* Il y a des données lues depuis le fichier */
-	f->_flag&=~_IOEOF;
-	f->_cnt--;
-	c=*f->_ptr++;
+	  f->_flag|=_IOEOF;
+    }else{/* Il y a des données valides lues depuis le fichier */
+	  f->_flag&=~_IOEOF;
+	  f->_cnt--;
+	  c=*f->_ptr++;
     }
 
-    return c;
 }
 
 /*!
