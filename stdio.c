@@ -1,3 +1,11 @@
+/*********************************************/
+/**                                         **
+ *                                           *
+ * Authors: Maxime MULTARI                   *
+ *          Julien LE VAN SUU                *
+ *                                           *
+ **                                         **/
+/*********************************************/
 #include "stdio.h"
 #include <unistd.h>
 #include <string.h>

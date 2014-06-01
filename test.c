@@ -1,9 +1,17 @@
+/*********************************************/
+/**                                         **
+ *                                           *
+ * Authors: Maxime MULTARI                   *
+ *          Julien LE VAN SUU                *
+ *                                           *
+ **                                         **/
+/*********************************************/
 #include"stdio.h"
 #include <unistd.h>
 
 void tracer(FILE *f);
 int scanf(const char *format, ...);
-void _IOB_init(void); //A UTILISER A CHAQUE DEBUT DE PROGRAMME
+void _IOB_init(void); //A UTILISER A CHAQUE DEBUT DE PROGRAMME QUI UTILISERA NOTRE stdio.h !! 
 
 void copy(int src, int dst){
   char ch;
@@ -19,6 +27,24 @@ void copy_2(FILE *fin)
   while ((c = getc(fin)) != EOF){
     putchar(c);
   }
+}
+
+void copy_3(char* src, char* dest)
+{
+  int n;
+  FILE* fdin = fopen(src,"r");
+  FILE* fdout = fopen(dest,"w");
+
+  while((n = getc(fdin)) > 0) {
+	putc(n, fdout);
+  }
+  fclose(fdin);
+  fclose(fdout);
+}
+
+void test_cp(void){
+  copy_3("copytestsrc.txt","copytestdest.txt");
+  
 }
 
 void test_cat(char *fichiers[])	/* Ne fonctionne pas correctement */
@@ -103,7 +129,13 @@ void aff_menu(void){
    printf("   2 -> Test qui permet de vérifier la lecture de 2 caractères\n");
    printf("   3 -> Test d'écriture sur la sortie standard\n");
    printf("   4 -> cat(stdin -> stdout)\n");
- }
+   printf("   5 -> Version simplifiée de cp\n   qui copie le contenu de copytestsrc.txt vers copytestdest.txt\n");
+}
+
+void aff_avertiss(void){
+  printf("\n\n L'utilisation de ce test ne permet pas de revenir au menu, à la fin il faudra utiliser Ctrl-c\n\n");
+  printf("Vous pouvez commencer à taper :\n");
+}
 
 void menu(int *boucle){
   /* Ne pas oublier de modifier aussi l'affichage lorsque vous rajoutez une option */
@@ -128,9 +160,11 @@ void menu(int *boucle){
 	case 4:
 	  //test_cat(NULL);
 	  //copy(stdin->_file,stdout->_file);
-	  printf("\n\n L'utilisation de ce test ne permet pas de revenir au menu, à la fin il faudra utiliser Ctrl-c\n\n");
-	  printf("Vous pouvez commencer à taper :\n");
+	  aff_avertiss();
 	  copy_2(stdin);
+	  break;
+	case 5:
+	  test_cp();
 	  break;
 	default:
 	  printf("\n\nCe que vous avez rentré n'est attribué à aucun test pour le moment\n");
