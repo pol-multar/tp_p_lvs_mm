@@ -34,10 +34,10 @@ void copy_3(char* src, char* dest)
   int n;
   FILE* fdin = fopen(src,"r");
   FILE* fdout = fopen(dest,"w");
-
-  while((n = getc(fdin)) > 0) {
+  printf("%s",fgetc(fdin));
+  while((n = getc(fdin)) != EOF) {
+	printf("avant");
 	
-	putc(n, fdout);
   }
   fclose(fdin);
   fclose(fdout);
